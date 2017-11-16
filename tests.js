@@ -1,4 +1,4 @@
-const logger = require("./index")(),
+const logger = require("./index")({ useFiles: false }),
       Colour = logger.Colour,
       Level  = logger.Level;
 

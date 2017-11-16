@@ -8,17 +8,25 @@ and logged to the console, and to two files: one for combined logs, and one for 
 This package is very simple to use, and can be required and set up on a single line:
 
 ```js
-const logger = require("coloured-logger")({ outputFile: "someFileName", errorFile: "someFileName" });
+const logger = require("coloured-logger")(options);
 ```
-Requiring returns an object that you can use to log your messages. Note that `outputFile` and `errorFile`
-are both optional, and by default are set to `output.log` and `error.log`. All logs are kept in a `logs` folder.
+Requiring returns an object that you can use to log your messages.
 
 ### Features
-* Logs to the console and to files, one for combined logs and one for errors.
+* Logs to the console and (optionally) to files, one for combined logs and one for errors.
 * Supports custom logging levels and different colours.
 * No dependencies and very lightweight.
 * Ready to use straight out of the box, no additional configuration is necessary.
 * Logs timestamps to the console, and date + timestamps to files.
+
+### Options
+* `outputFile` - A filename for the combined log file.
+* `errorFile` - A filename for the error log file.
+* `useFiles` - A boolean specifying if you want to use files or not.
+
+**Note:** All options are optional, none are required. By default, output files are set to
+`output.log` and `error.log` for combined and errors, respectively.. All logs are kept in a
+`logs` folder.
 
 ### Functions
 * `logger.info(message)` - Logs an information message.

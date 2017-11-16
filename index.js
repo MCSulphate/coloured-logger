@@ -27,9 +27,11 @@ exports = module.exports = (options) => {
     //Options
     // outputFile: A filename to output logs to.
     //  errorFile: A filename to output errors to.
+    //   useFiles: Boolean, sets whether to save to files or not.
     
     let outputFilePath = path.join(__dirname, "..", "..", "logs", (options.outputFile || "output.log"));
     let errorFilePath = path.join(__dirname, "..", "..", "logs", (options.errorFile || "error.log"));
+    let useFiles = options.useFiles === undefined ? true : options.useFiles;
 
     // Level constant, used to identify different types of logs.
     const Level = {
@@ -87,6 +89,8 @@ exports = module.exports = (options) => {
     
     // Checks whether the log folder exists, and if not, tries to create it.
     function checkFolder() {
+        if (!useFiles) return true;
+        
         let folderPath = path.join(__dirname, "..", "..", "logs");
         if (!fs.existsSync(folderPath)) {
             try {
@@ -125,23 +129,30 @@ exports = module.exports = (options) => {
     return {
         // Logs an info message.
         info: (message) => {
-            appendToFile(outputFilePath, logMessage(message, Level.INFO, Colour.BLUE));
+            let messageToLog = logMessage(message, Level.INFO, Colour.BLUE);
+            if (useFiles) appendToFile(outputFilePath, messageToLog);
         },
 
         // Logs a warning message.
         warning: (message) => {
-            appendToFile(outputFilePath, logMessage(message, Level.WARN, Colour.YELLOW));
+            let messageToLog = logMessage(message, Level.WARN, Colour.YELLOW);
+            if (useFiles) appendToFile(outputFilePath, messageToLog);
         },
 
         // Logs an error message.
         error: (message) => {
             let messageToLog = logMessage(message, Level.ERROR, Colour.RED);
-            appendToFile(outputFilePath, messageToLog);
-            appendToFile(errorFilePath, messageToLog);
+            if (useFiles) {
+                appendToFile(outputFilePath, messageToLog);
+                appendToFile(errorFilePath, messageToLog);
+            }
         },
         
         // Logs a custom message.
-        log: logMessage,
+        log: (message, level, colour) => {
+            let messageToLog = logMessage(message, level, colour);
+            if (useFiles) appendToFile(outputFilePath, messageToLog);
+        },
         
         // Constants
         Colour: Colour,
