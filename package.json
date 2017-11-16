@@ -1,0 +1,17 @@
+{
+  "name": "coloured-logger",
+  "version": "1.1.0",
+  "description": "A simple coloured logger that provides pretty file and console logging.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests.js"
+  },
+  "author": "Matthew Lester",
+  "license": "MIT",
+  "dependencies": {},
+  "keywords": [
+    "logger",
+    "terminal",
+    "simple"
+  ]
+}
