@@ -105,6 +105,7 @@ exports = module.exports = (options) => {
     
     // Logs a message to the console and returns a string to be appended to the respective files.
     let logMessage = (message, level, colour) => {
+        if (message instanceof Object) message = JSON.stringify(message, null, 4);
         console.log(`${messageStart}${colour}${Level[level]}${messageEnd}${message}${Colour.RESET}`);
         return `${getDateString(false, DateType.FULL)} [${Level[level]}] ${message}\n`;
     };
@@ -127,6 +128,8 @@ exports = module.exports = (options) => {
 
     // Interface to use this module.
     return {
+        usingFiles: useFiles,
+        
         // Logs an info message.
         info: (message) => {
             let messageToLog = logMessage(message, Level.INFO, Colour.BLUE);

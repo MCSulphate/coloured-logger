@@ -1,12 +1,21 @@
-const logger = require("./index")({ useFiles: false }),
-      Colour = logger.Colour,
-      Level  = logger.Level;
+const log = require("./index")({ useFiles: true }),
+      Colour = log.Colour,
+      Level  = log.Level;
 
 // Info, Warning and Error Messages
-logger.info("Information message :)");
-logger.warning("Warning messsage :/");
-logger.error("Error message :( \n");
+log.info("Information message :)");
+log.warning("Warning messsage :/");
+log.error("Error message :( \n");
 
 // Custom Levels & Messages
-logger.addLevel("CUSTOM");
-logger.log("Custom message!", Level.CUSTOM, Colour.MAGENTA);
+log.addLevel("CUSTOM");
+log.log("Custom message!", Level.CUSTOM, Colour.MAGENTA);
+
+// Object Logging
+let obj = {
+      str: "string",
+      num: 100,
+      bool: false,
+      obj: {}
+};
+log.info(obj);
