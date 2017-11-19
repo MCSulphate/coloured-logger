@@ -73,8 +73,9 @@ exports = module.exports = (options) => {
         let colour = shouldColour ? [Colour.GREY, Colour.RESET] : [ "", "" ];
         
         // Pad all (maximum of) 2 digit values with a 0 at the start if they do not already have one.
-        let dateString = `${colour[0]}${date.getDate().toString(10).padStart(2, "0")}/${date.getMonth().toString(10).padStart(2, "0")}/${date.getFullYear()}${colour[1]}`;
-        let timeString = `${colour[0]}${date.getHours().toString(10).padStart(2, "0")}:${date.getMinutes().toString(10).padStart(2, "0")}:${date.getSeconds().toString(10).padStart(2, "0")}${colour[1]}`;
+        let padString = (stringToPad) => { return stringToPad.padStart(2, "0"); }
+        let dateString = `[${colour[0]}${padString(date.getDate().toString())}/${padString(date.getMonth().toString())}/${date.getFullYear().toString().substring(2)}${colour[1]}]`;
+        let timeString = `${colour[0]}${padString(date.getHours().toString())}:${padString(date.getMinutes().toString())}:${padString(date.getSeconds().toString())}${colour[1]}`;
         
         if (dateType === DateType.FULL) {
             return dateString + " " + timeString;
@@ -84,7 +85,7 @@ exports = module.exports = (options) => {
     }
 
     // Base strings for log messages.
-    const messageStart = `${getDateString(true, DateType.TIME)} ${Colour.GREY}[`;
+    const messageStart = () => { return `${getDateString(true, DateType.TIME)} ${Colour.GREY}[`; }
     const messageEnd = `${Colour.GREY}] ${Colour.WHITE}`;
     
     // Checks whether the log folder exists, and if not, tries to create it.
@@ -98,7 +99,7 @@ exports = module.exports = (options) => {
                 return true;
             } catch (e) {
                 logMessage(e, Level.ERROR, Colour.RED);
-                return false;
+                return e;
             }
         } else return true;
     }
@@ -106,15 +107,15 @@ exports = module.exports = (options) => {
     // Logs a message to the console and returns a string to be appended to the respective files.
     let logMessage = (message, level, colour) => {
         if (message instanceof Object) message = JSON.stringify(message, null, 4);
-        console.log(`${messageStart}${colour}${Level[level]}${messageEnd}${message}${Colour.RESET}`);
+        console.log(`${messageStart()}${colour}${Level[level]}${messageEnd}${message}${Colour.RESET}`);
         return `${getDateString(false, DateType.FULL)} [${Level[level]}] ${message}\n`;
     };
     
-    // Exits if folder cannot be created.
+    // Returns error object if it fails to create the folder.
     let folderCreated = checkFolder();
     if (!folderCreated) {
         logMessage("Failed to create logs folder.", Level.ERROR, Colour.RED);
-        process.exit(1);
+        return { error: "Failed to create logs folder." };
     }
     
     // Appends a log message to a file.

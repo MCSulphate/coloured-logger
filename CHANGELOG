@@ -1,0 +1,5 @@
+Version 1.5.0
+-------------
+* **Bug Fix:** Fixed incorrect timestamps resulting from `messageStart` being constant.
+* **Tweak:** Improved look and readability of date stamps in log files.
+* **Tweak:** No longer exits Node if the package fails to set up correctly.
