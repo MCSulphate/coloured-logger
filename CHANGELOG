@@ -6,6 +6,15 @@ Version 1.5.0
 
 Version 1.6.0
 -------------
-* **Feature:** Added log names, shown next to all messages from a specific instance of the package.
-* **Tweak:** Updated some of the wording in the README, also added new documentation for the new feature.
+* **Feature:** Added log names, shown next to all messages from a specific instance of the
+  package.
+* **Tweak:** Updated some of the wording in the README, also added new documentation for
+  the new feature.
 * **Fixes:** Small code tweaks for efficiency.
+
+Version 1.6.1
+-------------
+* **Tweak:** `useLogName` is no longer required when using `logName`. It should now only
+  be used when the filename is wanted.
+* **Tweak:** Logging of objects now starts on a new line.
+* **Bug Fix:** Stopped [undefined] showing up where the log name should be.

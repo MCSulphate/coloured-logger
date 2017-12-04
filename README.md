@@ -26,7 +26,7 @@ Requiring returns an object that you can use to log your messages.
 * `logName` - The name of the logger, to show next to each message. Default is the filename
   of the calling file.
 * `useLogName` - Specifies whether you want to use a log name for this logger. Default is
-  false.
+  false. This is not needed if you use `logName`.
 
 **Note:** All options are optional, none are required. By default, output files are set to
 `output.log` and `error.log` for combined and errors, respectively. All logs are kept in the
