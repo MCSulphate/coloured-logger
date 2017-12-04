@@ -1,15 +1,15 @@
-const log = require("./index")({ useFiles: true }),
-    Colour = log.Colour,
-    Level = log.Level;
+const logger = require("./index")({ useFiles: false, useLogName: true, logName: "Tests" }),
+    Colour = logger.Colour,
+    Level = logger.Level;
 
 // Info, Warning and Error Messages
-log.info("Information message :)");
-log.warning("Warning messsage :/");
-log.error("Error message :( \n");
+logger.info("Information message :)");
+logger.warning("Warning messsage :/");
+logger.error("Error message :( \n");
 
 // Custom Levels & Messages
-log.addLevel("CUSTOM");
-log.log("Custom message!", Level.CUSTOM, Colour.MAGENTA);
+logger.addLevel("CUSTOM");
+logger.log("Custom message!", Level.CUSTOM, Colour.MAGENTA);
 
 // Object Logging
 let obj = {
@@ -18,9 +18,12 @@ let obj = {
     bool: false,
     obj: {}
 };
-log.info(obj);
+logger.info(obj);
+
+// Changing the Log Name
+logger.setLogName();
 
 // Time Stamp Check
 setTimeout(() => {
-    log.info("Time stamp check.");
+    logger.info("Time stamp check.");
 }, 1000);

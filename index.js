@@ -20,18 +20,60 @@
 
 const fs   = require("fs"),
       path = require("path");
-      
-exports = module.exports = (options) => {
+
+// Private function, returns the file that called this package (used for default log name).
+function _getCallerFileName() {
+    // Capture the original function for setting later.
+    let originalFunction = Error.prepareStackTrace;
+    
+    let callerFile;
+    try {
+        let err = new Error();
+        let currentFile;
+        
+        // Just return the stack when prepareStackTrace is called.
+        Error.prepareStackTrace = function (err, stack) { return stack; };
+        
+        // Get the current file name and find the caller.
+        currentFile = err.stack.shift().getFileName();
+        while (err.stack.length) {
+            callerFile = err.stack.shift().getFileName();
+            
+            if (callerFile !== currentFile) break;
+        }
+    } catch (e) {}
+    
+    // Set the function back to it's original one.
+    Error.prepareStackTrace = originalFunction;
+    return path.basename(callerFile);
+}
+
+// Module Exports
+exports = module.exports = function (options) {
     options = options || {};
     
-    //Options
-    // outputFile: A filename to output logs to.
-    //  errorFile: A filename to output errors to.
-    //   useFiles: Boolean, sets whether to save to files or not.
+    // Configure the log file paths.
+    let outputFilePath;
+    let errorFilePath;
     
-    let outputFilePath = path.join(__dirname, "..", "..", "logs", (options.outputFile || "output.log"));
-    let errorFilePath = path.join(__dirname, "..", "..", "logs", (options.errorFile || "error.log"));
-    let useFiles = options.useFiles === undefined ? true : options.useFiles;
+    let useFiles = options.useFiles === undefined ? true : !!options.useFiles; // True by default.
+    if (useFiles) {
+        outputFilePath = path.join(__dirname, "..", "..", "logs", (options.outputFile || "output.log"));
+        errorFilePath = path.join(__dirname, "..", "..", "logs", (options.errorFile || "error.log"));
+    }
+    
+    // Configure the log name.
+    let logName;
+    function _getLogName(shouldColour) {
+        let colours = shouldColour ? [Colour.GREY, Colour.GREEN, Colour.RESET] : ["", "", ""];
+        return `${colours[0]}[${colours[1]}${logName}${colours[0]}]${colours[2]}`;
+    }
+    
+    let useLogName = !!options.useLogName;
+    if (useLogName) {
+        if (options.logName) logName = options.logName;
+        else logName = _getCallerFileName();
+    }
 
     // Level constant, used to identify different types of logs.
     const Level = {
@@ -68,7 +110,7 @@ exports = module.exports = (options) => {
     };
 
     // Function that returns a date-related string.
-    function getDateString(shouldColour, dateType) {
+    function _getDateString(shouldColour, dateType) {
         let date = new Date();
         let colour = shouldColour ? [Colour.GREY, Colour.RESET] : [ "", "" ];
         
@@ -85,11 +127,11 @@ exports = module.exports = (options) => {
     }
 
     // Base strings for log messages.
-    const messageStart = () => { return `${getDateString(true, DateType.TIME)} ${Colour.GREY}[`; }
-    const messageEnd = `${Colour.GREY}] ${Colour.WHITE}`;
+    const startBegin = () => { return `${_getDateString(true, DateType.TIME)} ${_getLogName(true)} ${Colour.GREY}[`; }
+    const startEnd = `${Colour.GREY}] ${Colour.WHITE}`;
     
     // Checks whether the log folder exists, and if not, tries to create it.
-    function checkFolder() {
+    function _checkFolder() {
         if (!useFiles) return true;
         
         let folderPath = path.join(__dirname, "..", "..", "logs");
@@ -98,31 +140,31 @@ exports = module.exports = (options) => {
                 fs.mkdirSync(folderPath);
                 return true;
             } catch (e) {
-                logMessage(e, Level.ERROR, Colour.RED);
+                _logMessage(e, Level.ERROR, Colour.RED);
                 return e;
             }
         } else return true;
     }
     
     // Logs a message to the console and returns a string to be appended to the respective files.
-    let logMessage = (message, level, colour) => {
+    let _logMessage = (message, level, colour) => {
         if (message instanceof Object) message = JSON.stringify(message, null, 4);
-        console.log(`${messageStart()}${colour}${Level[level]}${messageEnd}${message}${Colour.RESET}`);
-        return `${getDateString(false, DateType.FULL)} [${Level[level]}] ${message}\n`;
+        console.log(`${startBegin()}${colour}${Level[level]}${startEnd}${message}${Colour.RESET}`);
+        return `${_getDateString(false, DateType.FULL)} ${_getLogName(false)} [${Level[level]}] ${message}\n`;
     };
     
     // Returns error object if it fails to create the folder.
-    let folderCreated = checkFolder();
+    let folderCreated = _checkFolder();
     if (!folderCreated) {
-        logMessage("Failed to create logs folder.", Level.ERROR, Colour.RED);
+        _logMessage("Failed to create logs folder.", Level.ERROR, Colour.RED);
         return { error: "Failed to create logs folder." };
     }
     
     // Appends a log message to a file.
-    function appendToFile(path, content) {
+    function _appendToFile(path, content) {
         fs.appendFile(path, content, "utf-8", (err) => {
             if (err) {
-                logMessage(`Failed to append to logfile '${path}'.`, Level.ERROR, Colour.RED);
+                _logMessage(`Failed to append to logfile '${path}'.`, Level.ERROR, Colour.RED);
             }
         });
     }
@@ -133,29 +175,29 @@ exports = module.exports = (options) => {
         
         // Logs an info message.
         info: (message) => {
-            let messageToLog = logMessage(message, Level.INFO, Colour.BLUE);
-            if (useFiles) appendToFile(outputFilePath, messageToLog);
+            let messageToLog = _logMessage(message, Level.INFO, Colour.BLUE);
+            if (useFiles) _appendToFile(outputFilePath, messageToLog);
         },
 
         // Logs a warning message.
         warning: (message) => {
-            let messageToLog = logMessage(message, Level.WARN, Colour.YELLOW);
-            if (useFiles) appendToFile(outputFilePath, messageToLog);
+            let messageToLog = _logMessage(message, Level.WARN, Colour.YELLOW);
+            if (useFiles) _appendToFile(outputFilePath, messageToLog);
         },
 
         // Logs an error message.
         error: (message) => {
-            let messageToLog = logMessage(message, Level.ERROR, Colour.RED);
+            let messageToLog = _logMessage(message, Level.ERROR, Colour.RED);
             if (useFiles) {
-                appendToFile(outputFilePath, messageToLog);
-                appendToFile(errorFilePath, messageToLog);
+                _appendToFile(outputFilePath, messageToLog);
+                _appendToFile(errorFilePath, messageToLog);
             }
         },
         
         // Logs a custom message.
         log: (message, level, colour) => {
-            let messageToLog = logMessage(message, level, colour);
-            if (useFiles) appendToFile(outputFilePath, messageToLog);
+            let messageToLog = _logMessage(message, level, colour);
+            if (useFiles) _appendToFile(outputFilePath, messageToLog);
         },
         
         // Constants
@@ -163,11 +205,16 @@ exports = module.exports = (options) => {
         Level: Level,
         DateType: DateType,
         
-        // Additional Functions
-        addLevel: (level) => {
-            let indexToAdd = Object.keys(Level).length / 2;
-            Level[level.toUpperCase()] = indexToAdd;
-            Level[indexToAdd] = level.toUpperCase();
+        // Adds a custom message to be used.
+        addLevel: function (level) {
+            let indexToAdd = Object.keys(this.Level).length / 2;
+            this.Level[level.toUpperCase()] = indexToAdd;
+            this.Level[indexToAdd] = level.toUpperCase();
+        },
+        
+        // Sets the log name.
+        setLogName: function (name) {
+            logName = name || _getCallerFileName();
         }
     };
 };
