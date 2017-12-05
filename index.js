@@ -183,7 +183,7 @@ exports = module.exports = function (options) {
         },
 
         // Logs a warning message.
-        warning: (message) => {
+        warn: (message) => {
             let messageToLog = _logMessage(message, Level.WARN, Colour.YELLOW);
             if (useFiles) _appendToFile(outputFilePath, messageToLog);
         },

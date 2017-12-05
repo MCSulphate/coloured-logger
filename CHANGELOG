@@ -18,3 +18,7 @@ Version 1.6.1
   be used when the filename is wanted.
 * **Tweak:** Logging of objects now starts on a new line.
 * **Bug Fix:** Stopped [undefined] showing up where the log name should be.
+
+Version 1.6.2
+-------------
+* **Tweak:** Changed `logger.warning()` to `logger.warn()`.
