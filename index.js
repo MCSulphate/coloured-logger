@@ -74,8 +74,8 @@ exports = module.exports = function (options) {
     function _getLogName(shouldColour) {
         if (!useLogName) return "";
         let colours = shouldColour ? [Colour.GREY, Colour.GREEN, Colour.RESET] : ["", "", ""];
-        // Add spacing here, otherwise unnecessary spacing created in the actual message.
-        return ` ${colours[0]}[${colours[1]}${logName}${colours[0]}]${colours[2]}`;
+        // Add spacing here, otherwise unnecessary spacing is created in the actual message when there is no log name.
+        return `${colours[0]}[${colours[1]}${logName}${colours[0]}]${colours[2]} `;
     }
 
     // Level constant, used to identify different types of logs.
@@ -130,8 +130,8 @@ exports = module.exports = function (options) {
     }
 
     // Base strings for log messages.
-    const startBegin = () => { return `${_getDateString(true, DateType.TIME)}${_getLogName(true)} ${Colour.GREY}[`; };
-    const startEnd = `${Colour.GREY}] ${Colour.WHITE}`;
+    const startBegin = () => { return `${_getDateString(true, DateType.TIME)} ${Colour.GREY}[`; };
+    const startEnd = `${Colour.GREY}] ${_getLogName(true)}${Colour.WHITE}`;
     
     // Checks whether the log folder exists, and if not, tries to create it.
     function _checkFolder() {
@@ -153,7 +153,7 @@ exports = module.exports = function (options) {
     let _logMessage = (message, level, colour) => {
         if (message instanceof Object) message = "\n" + JSON.stringify(message, null, 4);
         console.log(`${startBegin()}${colour}${Level[level]}${startEnd}${message}${Colour.RESET}`);
-        return `${_getDateString(false, DateType.FULL)}${_getLogName(false)} [${Level[level]}] ${message}\n`;
+        return `${_getDateString(false, DateType.FULL)} [${Level[level]}] ${_getLogName(false)}${message}\n`;
     };
     
     // Returns error object if it fails to create the folder.

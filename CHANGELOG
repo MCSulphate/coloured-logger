@@ -22,3 +22,7 @@ Version 1.6.1
 Version 1.6.2
 -------------
 * **Tweak:** Changed `logger.warning()` to `logger.warn()`.
+
+Version 1.6.3
+-------------
+* **Tweak:** Moved the log name in front of the log level.

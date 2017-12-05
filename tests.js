@@ -4,7 +4,7 @@ const logger = require("./index")({ useFiles: false, logName: "Tests" }),
 
 // Info, Warning and Error Messages
 logger.info("Information message :)");
-logger.warning("Warning messsage :/");
+logger.warn("Warning messsage :/");
 logger.error("Error message :( \n");
 
 // Custom Levels & Messages
