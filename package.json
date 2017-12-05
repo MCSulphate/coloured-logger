@@ -1,6 +1,6 @@
 {
   "name": "coloured-logger",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "A simple coloured logger that provides pretty file and console logging.",
   "main": "index.js",
   "bugs": "https://github.com/MCSulphate/coloured-logger/issues",
