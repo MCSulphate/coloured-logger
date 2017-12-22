@@ -151,7 +151,8 @@ exports = module.exports = function (options) {
     
     // Logs a message to the console and returns a string to be appended to the respective files.
     let _logMessage = (message, level, colour) => {
-        if (message instanceof Object) message = "\n" + JSON.stringify(message, null, 4);
+        if (message instanceof Object && !(message instanceof Function)) message = "\n" + JSON.stringify(message, null, 4);
+        else if (message instanceof Function) message = "\n" + message;
         console.log(`${startBegin()}${colour}${Level[level]}${startEnd}${message}${Colour.RESET}`);
         return `${_getDateString(false, DateType.FULL)} [${Level[level]}] ${_getLogName(false)}${message}\n`;
     };

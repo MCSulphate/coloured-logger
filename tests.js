@@ -20,6 +20,11 @@ let obj = {
 };
 logger.info(obj);
 
+// Function Logging
+function someFunction() {
+}
+logger.info(someFunction);
+
 // Changing the Log Name
 logger.setLogName();
 

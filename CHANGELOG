@@ -26,3 +26,7 @@ Version 1.6.2
 Version 1.6.3
 -------------
 * **Tweak:** Moved the log name in front of the log level.
+
+Version 1.6.4
+-------------
+* **Tweak:** Stopped functions from being printed as `undefined`.
